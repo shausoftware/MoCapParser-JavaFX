@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+
+<DialogPane fx:id="simpleFile" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.SimpleFileController">
+   <content>
+      <HBox>
+         <children>
+            <Label prefHeight="26.0" prefWidth="100.0" text="Filename" />
+            <TextField fx:id="txtFilename" prefWidth="250.0" />
+         </children>
+      </HBox>
+   </content>
+   <buttonTypes>
+      <ButtonType fx:constant="CANCEL" />
+      <ButtonType fx:constant="YES" />
+   </buttonTypes>
+</DialogPane>

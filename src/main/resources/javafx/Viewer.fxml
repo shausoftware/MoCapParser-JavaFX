@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import com.shau.mocap.ui.MoCapPlayer?>
+
+<VBox fx:id="canvasVBox" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.ViewerController">
+   <children>
+      <MoCapPlayer fx:id="moCapViewer" height="200.0" width="200.0" />
+   </children>
+</VBox>

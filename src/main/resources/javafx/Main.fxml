@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.MainController">
+   <top>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem fx:id="menuOpenFile" mnemonicParsing="false" onAction="#menuOpenFileClick" text="Open" />
+                    <MenuItem fx:id="menuSaveFile" mnemonicParsing="false" onAction="#menuSaveFileClick" text="Save" />
+                    <MenuItem fx:id="menuSaveFileAs" mnemonicParsing="false" onAction="#menuSaveFileAsClick" text="Save As" />
+                  </items>
+                </Menu>
+                  <Menu mnemonicParsing="false" text="Axis">
+                    <items>
+                      <MenuItem fx:id="menuChangeAxis" mnemonicParsing="false" onAction="#menuChangeAxisClick" text="Change Axis" />
+                    </items>
+                  </Menu>
+                <Menu mnemonicParsing="false" text="Shadertoy">
+                  <items>
+                    <MenuItem fx:id="menuGenerateFourier" mnemonicParsing="false" onAction="#menuGenerateFourierClick" text="Generate Fourier" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+             <fx:include fx:id="playState" source="PlayState.fxml" />
+         </children>
+      </VBox>
+   </top>
+   <left>
+      <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="350.0" spacing="20.0" BorderPane.alignment="CENTER">
+         <children>
+             <HBox>
+                 <children>
+                     <Label fx:id="lblFilename" text="Current File:" />
+                 </children>
+                 <VBox.margin>
+                     <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                 </VBox.margin>
+             </HBox>             <fx:include fx:id="offset" source="Offset.fxml" />
+            <Button fx:id="btnUpdateJointsForFrame" mnemonicParsing="false" onAction="#btnUpdateJointsForFrameClick" text="Update Joints for Current Frame" />
+            <fx:include fx:id="jointsTable" source="JointsTable.fxml" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+       <fx:include fx:id="viewer" source="Viewer.fxml" />
+   </center>
+</BorderPane>

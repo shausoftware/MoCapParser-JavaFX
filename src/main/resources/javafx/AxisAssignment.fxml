@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<DialogPane prefWidth="350.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.AxisAssignmentController">
+   <header>
+      <HBox alignment="TOP_CENTER">
+         <children>
+            <Label text="Assign Axis" textAlignment="CENTER">
+               <font>
+                  <Font name="Arial Bold" size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </HBox>
+   </header>
+   <content>
+      <GridPane>
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Assignment  X" />
+            <ComboBox fx:id="cmbAssignmentX" prefWidth="150.0" GridPane.columnIndex="1" >
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="X" />
+                        <String fx:value="Y" />
+                        <String fx:value="Z" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Label text="Assignment Y" GridPane.rowIndex="1" />
+            <ComboBox fx:id="cmbAssignmentY" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" >
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="X" />
+                        <String fx:value="Y" />
+                        <String fx:value="Z" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <Label text="Assignment Y" GridPane.rowIndex="2" />
+            <ComboBox fx:id="cmbAssignmentZ" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" >
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="X" />
+                        <String fx:value="Y" />
+                        <String fx:value="Z" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+         </children>
+      </GridPane>
+   </content>
+   <buttonTypes>
+      <ButtonType fx:constant="CANCEL" />
+      <ButtonType fx:constant="OK" />
+   </buttonTypes>
+</DialogPane>

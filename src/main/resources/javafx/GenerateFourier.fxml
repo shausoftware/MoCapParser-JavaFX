@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<DialogPane prefWidth="540.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.GenerateFourierController">
+   <header>
+      <HBox alignment="TOP_CENTER">
+         <children>
+            <Label text="Generate Fourier Transform" textAlignment="CENTER">
+               <font>
+                  <Font name="Arial Bold" size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <opaqueInsets>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </HBox>
+   </header>
+   <content>
+      <HBox spacing="10.0">
+         <children>
+            <Label prefHeight="26.0" prefWidth="70.0" text="Start Frame" />
+            <TextField fx:id="txtStartFrame" prefWidth="50.0" />
+            <Label prefHeight="26.0" prefWidth="60.0" text="End Frame" />
+            <TextField fx:id="txtEndFrame" prefWidth="50.0" />
+            <Label prefHeight="26.0" prefWidth="90.0" text="Fourier Frames" />
+            <TextField fx:id="txtFourierFrames" prefWidth="50.0" />
+            <Label prefHeight="26.0" prefWidth="40.0" text="Loop" />
+            <CheckBox fx:id="cbLoop" mnemonicParsing="false" prefHeight="26.0" />
+         </children>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding>
+      </HBox>
+   </content>
+   <buttonTypes>
+      <ButtonType fx:constant="CANCEL" />
+      <ButtonType fx:constant="OK" />
+   </buttonTypes>
+</DialogPane>

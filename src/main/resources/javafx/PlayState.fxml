@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox fx:id="playState" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.PlayStateController">
+    <children>
+        <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#btnPlayClick" text="Play" />
+        <Label fx:id="lblTotalFrames" prefHeight="26.0" text="Total Frames: " />
+        <Label fx:id="lblStartFrame" contentDisplay="CENTER" prefHeight="26.0" text="Start Frame" />
+        <TextField fx:id="txtStartFrame" prefHeight="26.0" prefWidth="50.0" />
+        <Label fx:id="lblEndFrame" prefHeight="26.0" text="End Frame" />
+        <TextField fx:id="txtEndFrame" prefHeight="26.0" prefWidth="50.0" />
+        <Label fx:id="lblCurrentFrame" prefHeight="26.0" text="Current Frame" />
+        <TextField fx:id="txtCurrentFrame" prefHeight="26.0" prefWidth="50.0" />
+        <Label fx:id="lblFrameDuration" prefHeight="26.0" text="Frame Duration (ms)" />
+        <TextField fx:id="txtFrameDuration" prefWidth="50.0" />
+        <Label fx:id="lblView" prefHeight="26.0" text="View" />
+        <ComboBox fx:id="cmbView" maxWidth="80.0" prefWidth="150.0" value="XY">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="XY" />
+                    <String fx:value="ZY" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Label fx:id="lblScale" prefHeight="26.0" text="Scale" />
+        <ComboBox fx:id="cmbScale" prefWidth="80.0" value="1.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="10.0" />
+                    <String fx:value="5.0" />
+                    <String fx:value="2.0" />
+                    <String fx:value="1.0" />
+                    <String fx:value="0.5" />
+                    <String fx:value="0.25" />
+                    <String fx:value="0.1" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+        <Button fx:id="btnUpdatePlayState" mnemonicParsing="false" onAction="#btnUpdatePlayStateClick" text="Update Play State" />
+    </children>
+   <padding>
+      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+   </padding>
+</HBox>
