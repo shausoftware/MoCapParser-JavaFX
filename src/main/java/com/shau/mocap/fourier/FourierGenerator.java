@@ -19,11 +19,11 @@ public class FourierGenerator {
         int frames = endFrame - startFrame;
         int allJoints = moCapScene.getFrames().get(startFrame).getJoints().size();
         //displayed joints
-        int joints = moCapScene.getFrames().get(startFrame).getJoints().stream()
+        int displayedJoints = moCapScene.getFrames().get(startFrame).getJoints().stream()
                 .filter(j -> j.isDisplay())
                 .collect(Collectors.toList()).size();
 
-        Double[][][] transform = new Double[joints][fourierFrames][6];
+        Double[][][] transform = new Double[displayedJoints][fourierFrames][6];
         int jointCount = 0;
         for (int i = 0;  i < allJoints; i++) {
             int index = i;
@@ -32,12 +32,13 @@ public class FourierGenerator {
                     .limit(frames)
                     .map(f -> f.getJoints().get(index))
                     .collect(Collectors.toList());
+            if (loop) {
+                fourierJoints.add(fourierJoints.get(0)); //add first joint of frame to end of list when looping
+            }
 
             if (fourierJoints.get(0).isDisplay()) {
                 transform[jointCount++] = calculateFourier(fourierJoints,
                         fourierFrames,
-                        startFrame,
-                        loop,
                         moCapScene.getSpatialOffset().getOffsetJointId());
             }
         }
@@ -48,8 +49,6 @@ public class FourierGenerator {
 
     private static Double[][] calculateFourier(List<Joint> joints,
                                                int fourierFrames,
-                                               int startFrame,
-                                               boolean loop,
                                                Integer centerJointId) {
 
         Double[][] fcs = new Double[fourierFrames][6];
@@ -57,50 +56,32 @@ public class FourierGenerator {
         Joint centerJoint = centerJointId == null ? null : joints.get(centerJointId - 1);
 
         for (int k = 0;  k < fourierFrames; k++) {
-            Double[] fc = new Double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+            Double[] fc = new Double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
             for (int i = 0; i < frames; i++) {
                 Joint joint = joints.get(i);
-                Double[] bin = generateBin(joint, centerJoint, i, k, frames + (loop ? 1 : 0));
-                fc[0] += bin[0];
-                fc[1] += bin[1];
-                fc[2] += bin[2];
-                fc[3] += bin[3];
-                fc[4] += bin[4];
-                fc[5] += bin[5];
-            }
-            if (loop) {
-                Joint joint = joints.get(0);
-                Double[] bin = generateBin(joint, centerJoint, frames, k, frames + 1);
-                fc[0] += bin[0];
-                fc[1] += bin[1];
-                fc[2] += bin[2];
-                fc[3] += bin[3];
-                fc[4] += bin[4];
-                fc[5] += bin[5];
+
+                Double xPos = joint.getX();
+                Double yPos = joint.getY();
+                Double zPos = joint.getZ();
+                if (centerJoint != null) {
+                    xPos -= centerJoint.getX();
+                    //yPos -= centerJoint.getY(); //walking?
+                    zPos -= centerJoint.getZ();
+                }
+
+                Double an = -6.283185 * Double.valueOf(k) * Double.valueOf(i) / Double.valueOf(frames);
+                Double[] ex = new Double[] {Math.cos(an), Math.sin(an)};
+                fc[0] += xPos * ex[0];
+                fc[1] += xPos * ex[1];
+                fc[2] += yPos * ex[0];
+                fc[3] += yPos * ex[1];
+                fc[4] += zPos * ex[0];
+                fc[5] += zPos * ex[1];
             }
             fcs[k] = fc;
         }
 
         return fcs;
-    }
-
-    private static Double[] generateBin(Joint joint, Joint centerJoint, int i, int k, int f) {
-
-        Double xPos = joint.getX();
-        Double yPos = joint.getY();
-        Double zPos = joint.getZ();
-
-        if (centerJoint != null) {
-            xPos -= centerJoint.getX();
-            //yPos -= centerJoint.getY();
-            zPos -= centerJoint.getZ();
-        }
-
-        Double an = -6.283185 * Double.valueOf(k) * Double.valueOf(i) / Double.valueOf(f);
-        Double[] ex = new Double[] {Math.cos(an), Math.sin(an)};
-
-        return new Double[] {xPos * ex[0], xPos * ex[1], yPos * ex[0], yPos * ex[1], zPos * ex[0], zPos * ex[1]};
-
     }
 
     private static Integer encode(Integer a, Integer b) {
