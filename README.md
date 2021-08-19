@@ -2,6 +2,8 @@
 A tool for parsing C3D &amp; TRC motion capture files generating compact Fourier transforms of selected data for use in GLSL shaders (specifically Shadertoy). 
 Please note that this tool has many quirks (bugs) as I built it for my own amusement to create Shadertoy animations, but hopefully it may be of use to someone. 
 
+![mocap-screenshot](mocap-screenshot.png)
+
 This tool is implemented as a command line driven jar and is built with Gradle and Java 11 or greater (JavaFX UI). A pre-built jar can be found in the binary folder.
 
 *./gradlew build*
