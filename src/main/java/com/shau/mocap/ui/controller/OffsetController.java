@@ -31,12 +31,12 @@ public class OffsetController {
         display();
     }
 
-    public void btnClearOffsetClick(ActionEvent ae) {
+    public void btnClearOffsetAction(ActionEvent ae) {
         spatialOffset = new SpatialOffset(); //empty offset
         mainController.updateSpatialOffset(spatialOffset);
     }
 
-    public void btnUpdateOffsetClick(ActionEvent ae) {
+    public void btnUpdateOffsetAction(ActionEvent ae) {
         try {
             spatialOffset = new SpatialOffset(Double.valueOf(txtOffsetX.getText()),
                     Double.valueOf(txtOffsetY.getText()),

@@ -2,7 +2,7 @@ package com.shau.mocap.parser.c3d;
 
 import com.shau.mocap.exception.ParserException;
 import com.shau.mocap.parser.c3d.domain.*;
-import com.shau.mocap.parser.util.BinaryHelper;
+import com.shau.mocap.util.BinaryHelper;
 import com.shau.mocap.parser.util.DataIndex;
 
 import java.nio.ByteOrder;

@@ -11,7 +11,7 @@
 
 <HBox fx:id="playState" spacing="10.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.PlayStateController">
     <children>
-        <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#btnPlayClick" text="Play" />
+        <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#btnPlayAction" text="Play" />
         <Label fx:id="lblTotalFrames" prefHeight="26.0" text="Total Frames: " />
         <Label fx:id="lblStartFrame" contentDisplay="CENTER" prefHeight="26.0" text="Start Frame" />
         <TextField fx:id="txtStartFrame" prefHeight="26.0" prefWidth="50.0" />
@@ -44,7 +44,7 @@
                 </FXCollections>
             </items>
         </ComboBox>
-        <Button fx:id="btnUpdatePlayState" mnemonicParsing="false" onAction="#btnUpdatePlayStateClick" text="Update Play State" />
+        <Button fx:id="btnUpdatePlayState" mnemonicParsing="false" onAction="#btnUpdatePlayStateAction" text="Update Play State" />
     </children>
    <padding>
       <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />

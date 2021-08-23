@@ -150,15 +150,15 @@ public class MainController implements Initializable {
 
     //event handlers
 
-    public void btnUpdateJointsForFrameClick(ActionEvent event) {
+    public void btnUpdateJointsForFrameAction(ActionEvent event) {
         updateJointsTable();
     }
 
-    public void menuOpenFileClick(ActionEvent ae) {
+    public void menuOpenFileAction(ActionEvent ae) {
         simpleFileHandler("", FILE_OPEN);
     }
 
-    public void menuSaveFileClick(ActionEvent ae) {
+    public void menuSaveFileAction(ActionEvent ae) {
         try {
             MoCapFileHandler.saveSceneData(moCapScene);
         } catch (MoCapFileHandlerException e) {
@@ -166,7 +166,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void menuSaveFileAsClick(ActionEvent ae) {
+    public void menuSaveFileAsAction(ActionEvent ae) {
         simpleFileHandler(moCapScene.getFilename(), FILE_SAVE_AS);
     }
 
@@ -199,7 +199,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void menuChangeAxisClick(ActionEvent ae) {
+    public void menuChangeAxisAction(ActionEvent ae) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
@@ -223,7 +223,7 @@ public class MainController implements Initializable {
         }
     }
 
-    public void menuGenerateFourierClick(ActionEvent ae) {
+    public void menuGenerateFourierAction(ActionEvent ae) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource(
@@ -231,19 +231,25 @@ public class MainController implements Initializable {
                     )
             );
             DialogPane dialogPane = loader.load();
+            dialogPane.getStylesheets().add("css/mocap.css");
             GenerateFourierController controller = loader.getController();
             PlayState playState = moCapScene.getPlayState();
             controller.initFourierFrames(playState.getStartFrame(), playState.getEndFrame());
             Dialog<ButtonType> dialog = new Dialog<>();
             dialog.setDialogPane(dialogPane);
-            dialog.setTitle("Shadertoy");
             Optional<ButtonType> clicked = dialog.showAndWait();
             if (clicked.get() == ButtonType.OK) {
-                int startFrame = controller.getStartFrame();
-                int endFrame = controller.getEndFrame();
                 int fourierFrames = controller.getFourierFrames();
                 boolean loop = controller.isLoop();
-                FourierGenerator.generateFourier(moCapScene, startFrame, endFrame, fourierFrames, loop);
+                boolean useLowResolution = controller.isUseLowResolution();
+                int cutoff = controller.getCutoff();
+                FourierGenerator.generateFourier(moCapScene,
+                        playState.getStartFrame(),
+                        playState.getEndFrame(),
+                        fourierFrames,
+                        loop,
+                        useLowResolution,
+                        cutoff);
             }
         } catch (Exception e) {
             FxmlHelper.showError("Generate Fourier error", e.getMessage());

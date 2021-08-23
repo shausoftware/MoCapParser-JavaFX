@@ -35,11 +35,11 @@ public class PlayStateController {
         updateDisplay();
     }
 
-    public void btnPlayClick(ActionEvent event) {
+    public void btnPlayAction(ActionEvent event) {
         mainController.startPlayer(!currentPlayState.isPlay());
     }
 
-    public void btnUpdatePlayStateClick(ActionEvent event) {
+    public void btnUpdatePlayStateAction(ActionEvent event) {
         try {
             currentPlayState.updatePlayState(Integer.valueOf(txtFrameDuration.getText()),
                     Integer.valueOf(txtStartFrame.getText()),

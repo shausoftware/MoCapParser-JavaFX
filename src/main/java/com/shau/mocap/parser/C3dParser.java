@@ -8,7 +8,7 @@ import com.shau.mocap.parser.c3d.domain.C3dGroup;
 import com.shau.mocap.parser.c3d.domain.C3dHeader;
 import com.shau.mocap.parser.c3d.domain.C3dParameter;
 import com.shau.mocap.parser.c3d.domain.C3dValue;
-import com.shau.mocap.parser.util.BinaryHelper;
+import com.shau.mocap.util.BinaryHelper;
 import com.shau.mocap.parser.util.DataIndex;
 
 import java.io.FileInputStream;

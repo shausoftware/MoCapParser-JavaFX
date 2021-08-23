@@ -1,4 +1,4 @@
-package com.shau.mocap.parser.util;
+package com.shau.mocap.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -15,5 +15,16 @@ public class BinaryHelper {
 
     public static float readFloat(byte[] dword, ByteOrder byteOrder) {
         return ByteBuffer.wrap(dword).order(byteOrder).getFloat();
+    }
+
+    //encode 2 * 16 bit ints in Integer
+    public static Integer encode(int a, int b) {
+        return (a << 16) | b;
+    }
+
+    //encode 4 * 8 bit ints in Integer
+    public static Integer encode(int a, int b, int c, int d) {
+        byte[] ba = new byte[] {(byte) a, (byte) b, (byte) c, (byte) d};
+        return ByteBuffer.wrap(ba).getInt();
     }
 }

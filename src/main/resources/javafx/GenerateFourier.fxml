@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <DialogPane prefWidth="540.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.shau.mocap.ui.controller.GenerateFourierController">
@@ -27,25 +28,40 @@
          </padding>
       </HBox>
    </header>
-   <content>
-      <HBox spacing="10.0">
-         <children>
-            <Label prefHeight="26.0" prefWidth="70.0" text="Start Frame" />
-            <TextField fx:id="txtStartFrame" prefWidth="50.0" />
-            <Label prefHeight="26.0" prefWidth="60.0" text="End Frame" />
-            <TextField fx:id="txtEndFrame" prefWidth="50.0" />
-            <Label prefHeight="26.0" prefWidth="90.0" text="Fourier Frames" />
-            <TextField fx:id="txtFourierFrames" prefWidth="50.0" />
-            <Label prefHeight="26.0" prefWidth="40.0" text="Loop" />
-            <CheckBox fx:id="cbLoop" mnemonicParsing="false" prefHeight="26.0" />
-         </children>
-         <padding>
-            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
-         </padding>
-      </HBox>
-   </content>
    <buttonTypes>
       <ButtonType fx:constant="CANCEL" />
       <ButtonType fx:constant="OK" />
    </buttonTypes>
+   <content>
+      <VBox spacing="10.0">
+         <children>
+            <HBox spacing="10.0">
+               <children>
+                  <Label prefHeight="26.0" text="Start Frame" />
+                  <TextField fx:id="txtStartFrame" prefWidth="50.0" />
+                  <Label prefHeight="26.0" text="End Frame" />
+                  <TextField fx:id="txtEndFrame" prefWidth="50.0" />
+                  <Label prefHeight="26.0" text="Fourier Frames" />
+                  <TextField fx:id="txtFourierFrames" prefWidth="50.0"/>
+                  <Label prefHeight="26.0" text="Loop" />
+                  <CheckBox fx:id="cbLoop" mnemonicParsing="false" prefHeight="26.0" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox spacing="10.0">
+               <children>
+                  <Label prefHeight="26.0" text="Use Low Resolution" />
+                  <CheckBox fx:id="cbUseLowResolution" mnemonicParsing="false" prefHeight="26.0" onAction="#cbUseLowResolutionAction"/>
+                  <Label prefHeight="26.0" text="Cutoff" />
+                  <TextField fx:id="txtCutoff" prefWidth="50.0"/>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </content>
 </DialogPane>

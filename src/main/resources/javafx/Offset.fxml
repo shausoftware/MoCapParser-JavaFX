@@ -24,7 +24,7 @@
         </rowConstraints>
          <children>
             <Label fx:id="lblOffsetJointId" text="Offset Joint ID:" />
-            <Button fx:id="btnClearOffset" mnemonicParsing="false" text="Clear Offset" GridPane.columnIndex="1" onAction="#btnClearOffsetClick" />
+            <Button fx:id="btnClearOffset" mnemonicParsing="false" text="Clear Offset" GridPane.columnIndex="1" onAction="#btnClearOffsetAction" />
             <Label text="Offset X" GridPane.rowIndex="1" />
             <TextField fx:id="txtOffsetX" GridPane.columnIndex="1" GridPane.rowIndex="1" />
              <Label text="Offset Y" GridPane.rowIndex="2" />
@@ -33,7 +33,7 @@
             <TextField fx:id="txtOffsetZ" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>
       </GridPane>
-      <Button fx:id="btnUpdateOffset" mnemonicParsing="false" text="Update Offset Position" onAction="#btnUpdateOffsetClick" />
+      <Button fx:id="btnUpdateOffset" mnemonicParsing="false" text="Update Offset Position" onAction="#btnUpdateOffsetAction" />
    </children>
    <padding>
       <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
