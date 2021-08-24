@@ -63,8 +63,6 @@ Open and Save files in the local running directory.
 #### Things to do (apart from general bug fixing):
 Create a file format for .mcd files (JSON). Due to laziness the application currently uses object serialisation to save files making them fragile to code changes.
 
-Optimise output data further by creating high frequency Fourier data with lower resolution.
-
 #### Acknowledgments
 Motion capture file 60_12.c3d used for testing from http://mocap.cs.cmu.edu
 
