@@ -109,36 +109,18 @@ public class FourierGenerator {
             Double[][] dd = transform[i];
             for (int j = 0; j < dd.length; j++) {
                 Double[] d = dd[j];
-                //min x
-                if (d[0] < minX)
-                    minX = d[0].intValue();
-                if (d[1] < minX)
-                    minX = d[1].intValue();
-                //max x
-                if (d[0] >  maxX)
-                    maxX = d[0].intValue();
-                if (d[1]  > maxX)
-                    maxX = d[1].intValue();
-                //min y
-                if (d[2] < minY)
-                    minY = d[2].intValue();
-                if (d[3] < minY)
-                    minY = d[3].intValue();
-                //max y
-                if (d[2] > maxY)
-                   maxY = d[2].intValue();
-                if (d[3]  > maxY)
-                    maxY = d[3].intValue();
-                //min z
-                if (d[4] < minZ)
-                    minZ = d[4].intValue();
-                if (d[5] < minZ)
-                    minZ = d[5].intValue();
-                //max z
-                if (d[4] > maxZ)
-                    maxZ = d[4].intValue();
-                if (d[5] > maxZ)
-                    maxZ = d[5].intValue();
+                minX = lower(minX, d[0]);
+                minX = lower(minX, d[1]);
+                maxX = higher(maxX, d[0]);
+                maxX = higher(maxX, d[1]);
+                minY = lower(minY, d[2]);
+                minY = lower(minY, d[3]);
+                maxY = higher(maxY, d[2]);
+                maxY = higher(maxY, d[3]);
+                minZ = lower(minZ, d[4]);
+                minZ = lower(minZ, d[5]);
+                maxZ = higher(maxZ, d[4]);
+                maxZ = higher(maxZ, d[5]);
             }
         }
 
@@ -147,18 +129,44 @@ public class FourierGenerator {
         Integer yOffs = minY < 0 ? Math.abs(minY) : 0;
         Integer zOffs = minZ < 0 ? Math.abs(minZ) : 0;
 
+        int lowResMinX = Integer.MAX_VALUE;
+        int lowResMaxX = -Integer.MAX_VALUE;
+        int lowResMinY = Integer.MAX_VALUE;
+        int lowResMaxY = -Integer.MAX_VALUE;
+        int lowResMinZ = Integer.MAX_VALUE;
+        int lowResMaxZ = -Integer.MAX_VALUE;
+
+        for (int i = 0; i < transform.length; i++) {
+            Double[][] dd = transform[i];
+            for (int j = cutoff; j < dd.length; j++) {
+                Double[] d = dd[j];
+                lowResMinX = lower(lowResMinX, d[0] + xOffs);
+                lowResMinX = lower(lowResMinX, d[1] + xOffs);
+                lowResMaxX = higher(lowResMaxX, d[0] + xOffs);
+                lowResMaxX = higher(lowResMaxX, d[1] + xOffs);
+                lowResMinY = lower(lowResMinY, d[2] + yOffs);
+                lowResMinY = lower(lowResMinY, d[3] + yOffs);
+                lowResMaxY = higher(lowResMaxY, d[2] + yOffs);
+                lowResMaxY = higher(lowResMaxY, d[3] + yOffs);
+                lowResMinZ = lower(lowResMinZ, d[4] + zOffs);
+                lowResMinZ = lower(lowResMinZ, d[5] + zOffs);
+                lowResMaxZ = higher(lowResMaxZ, d[4] + zOffs);
+                lowResMaxZ = higher(lowResMaxZ, d[5] + zOffs);
+            }
+        }
+
         //maximum deviation in fourier data required for low resolution data
-        int maxDeviationX = maxX - minX;
-        int maxDeviationY = maxY - minY;
-        int maxDeviationZ = maxZ - minZ;
+        int maxLowResDevX = lowResMaxX - lowResMinX;
+        int maxLowResDevY = lowResMaxY - lowResMinY;
+        int maxLowResDevZ = lowResMaxZ - lowResMinZ;
 
         //low res scaling
-        float lowResScaleEncodeX = 255.0f / (float) maxDeviationX;
-        float lowResScaleDecodeX = (float) maxDeviationX / 255.0f;
-        float lowResScaleEncodeY = 255.0f / (float) maxDeviationY;
-        float lowResScaleDecodeY = (float) maxDeviationY / 255.0f;
-        float lowResScaleEncodeZ = 255.0f / (float) maxDeviationZ;
-        float lowResScaleDecodeZ = (float) maxDeviationZ / 255.0f;
+        float lowResScaleEncodeX = maxLowResDevX < 255 ? 1.0f : 255.0f / (float) maxLowResDevX;
+        float lowResScaleDecodeX = maxLowResDevX < 255 ? 1.0f : (float) maxLowResDevX / 255.0f;
+        float lowResScaleEncodeY = maxLowResDevY < 255 ? 1.0f : 255.0f / (float) maxLowResDevY;
+        float lowResScaleDecodeY = maxLowResDevY < 255 ? 1.0f : (float) maxLowResDevY / 255.0f;
+        float lowResScaleEncodeZ = maxLowResDevZ < 255 ? 1.0f : 255.0f / (float) maxLowResDevZ;
+        float lowResScaleDecodeZ = maxLowResDevZ < 255 ? 1.0f : (float) maxLowResDevZ / 255.0f;
 
         StringBuffer commonBuffer = new StringBuffer();
         commonBuffer.append("/* MOVE TO COMMON - START */" + LS);
@@ -176,6 +184,9 @@ public class FourierGenerator {
         shaderCode.append("#define yOffs " + yOffs + ".0" + LS);
         shaderCode.append("#define zOffs " + zOffs + ".0" + LS);
         if (useLowResolution) {
+            shaderCode.append("#define lowResXOffs " + lowResMinX + ".0" + LS);
+            shaderCode.append("#define lowResYOffs " + lowResMinY + ".0" + LS);
+            shaderCode.append("#define lowResZOffs " + lowResMinZ + ".0" + LS);
             shaderCode.append("#define lowResScaleDecodeX " + lowResScaleDecodeX + LS);
             shaderCode.append("#define lowResScaleDecodeY " + lowResScaleDecodeY + LS);
             shaderCode.append("#define lowResScaleDecodeZ " + lowResScaleDecodeZ + LS);
@@ -216,17 +227,17 @@ public class FourierGenerator {
             shaderCode.append("        float w = 2.0;" + LS);
             shaderCode.append("        float an = -6.283185*float(fourierIndex)*h;" + LS);
             shaderCode.append("        vec2 ex = vec2(cos(an), sin(an));" + LS);
-            shaderCode.append("        q.x += w*dot(decode8bit(eXLowRes[k],0U)*lowResScaleDecodeX - xOffs,ex)/OFS;" + LS);
-            shaderCode.append("        q.y += w*dot(decode8bit(eYLowRes[k],0U)*lowResScaleDecodeY - yOffs,ex)/OFS;" + LS);
-            shaderCode.append("        q.z += w*dot(decode8bit(eZLowRes[k],0U)*lowResScaleDecodeZ - zOffs,ex)/OFS;" + LS);
+            shaderCode.append("        q.x += w*dot(decode8bit(eXLowRes[k],0U)*lowResScaleDecodeX + lowResXOffs - xOffs,ex)/OFS;" + LS);
+            shaderCode.append("        q.y += w*dot(decode8bit(eYLowRes[k],0U)*lowResScaleDecodeY + lowResYOffs - yOffs,ex)/OFS;" + LS);
+            shaderCode.append("        q.z += w*dot(decode8bit(eZLowRes[k],0U)*lowResScaleDecodeZ + lowResZOffs - zOffs,ex)/OFS;" + LS);
             shaderCode.append("        fourierIndex++;" + LS);
             shaderCode.append(LS);
             shaderCode.append("        w = fourierIndex < (FFRAMES + FFRAMES_LOW_RES*2) - 1 ? 1.0 : 2.0;" + LS);
             shaderCode.append("        an = -6.283185*float(fourierIndex)*h;" + LS);
             shaderCode.append("        ex = vec2(cos(an), sin(an));" + LS);
-            shaderCode.append("        q.x += w*dot(decode8bit(eXLowRes[k],16U)*lowResScaleDecodeX - xOffs,ex)/OFS;" + LS);
-            shaderCode.append("        q.y += w*dot(decode8bit(eYLowRes[k],16U)*lowResScaleDecodeY - yOffs,ex)/OFS;" + LS);
-            shaderCode.append("        q.z += w*dot(decode8bit(eZLowRes[k],16U)*lowResScaleDecodeZ - zOffs,ex)/OFS;" + LS);
+            shaderCode.append("        q.x += w*dot(decode8bit(eXLowRes[k],16U)*lowResScaleDecodeX + lowResXOffs - xOffs,ex)/OFS;" + LS);
+            shaderCode.append("        q.y += w*dot(decode8bit(eYLowRes[k],16U)*lowResScaleDecodeY + lowResYOffs - yOffs,ex)/OFS;" + LS);
+            shaderCode.append("        q.z += w*dot(decode8bit(eZLowRes[k],16U)*lowResScaleDecodeZ + lowResZOffs - zOffs,ex)/OFS;" + LS);
             shaderCode.append("        fourierIndex++;" + LS);
             shaderCode.append("    }" + LS);
             shaderCode.append("    return q;" + LS);
@@ -297,31 +308,30 @@ public class FourierGenerator {
                 encBufferY.append("        eYLowRes = uint[" + (lowResJointLength / 2) + "] (");
                 encBufferZ.append("        eZLowRes = uint[" + (lowResJointLength / 2) + "] (");
 
-                for (int j = 0; j < lowResJointLength; j++) {
-                    if (j % 2 == 0) {
-                        Double[] frame1 = joint[j + cutoff];
-                        Double[] frame2 = joint[j + 1 + cutoff];
+                for (int k = 0; k < lowResJointLength; k++) {
+                    if (k % 2 == 1) {
 
-                        //offset to zero base data
-                        //scale low res data
-                        Integer f1x1 = (int) ((frame1[0] + xOffs) * lowResScaleEncodeX);
-                        Integer f1x2 = (int) ((frame1[1] + xOffs) * lowResScaleEncodeX);
-                        Integer f1y1 = (int) ((frame1[2] + yOffs) * lowResScaleEncodeY);
-                        Integer f1y2 = (int) ((frame1[3] + yOffs) * lowResScaleEncodeY);
-                        Integer f1z1 = (int) ((frame1[4] + zOffs) * lowResScaleEncodeZ);
-                        Integer f1z2 = (int) ((frame1[5] + zOffs) * lowResScaleEncodeZ);
-                        Integer f2x1 = (int) ((frame2[0] + xOffs) * lowResScaleEncodeX);
-                        Integer f2x2 = (int) ((frame2[1] + xOffs) * lowResScaleEncodeX);
-                        Integer f2y1 = (int) ((frame2[2] + yOffs) * lowResScaleEncodeY);
-                        Integer f2y2 = (int) ((frame2[3] + yOffs) * lowResScaleEncodeY);
-                        Integer f2z1 = (int) ((frame2[4] + zOffs) * lowResScaleEncodeZ);
-                        Integer f2z2 = (int) ((frame2[5] + zOffs) * lowResScaleEncodeZ);
+                        Double[] frame1 = joint[k - 1 + cutoff];
+                        Double[] frame2 = joint[k + cutoff];
+
+                        Integer f1x1 = (int) ((frame1[0].intValue() + xOffs - lowResMinX) * lowResScaleEncodeX);
+                        Integer f1x2 = (int) ((frame1[1].intValue() + xOffs - lowResMinX) * lowResScaleEncodeX);
+                        Integer f1y1 = (int) ((frame1[2].intValue() + yOffs - lowResMinY) * lowResScaleEncodeY);
+                        Integer f1y2 = (int) ((frame1[3].intValue() + yOffs - lowResMinY) * lowResScaleEncodeY);
+                        Integer f1z1 = (int) ((frame1[4].intValue() + zOffs - lowResMinZ) * lowResScaleEncodeZ);
+                        Integer f1z2 = (int) ((frame1[5].intValue() + zOffs - lowResMinZ) * lowResScaleEncodeZ);
+                        Integer f2x1 = (int) ((frame2[0].intValue() + xOffs - lowResMinX) * lowResScaleEncodeX);
+                        Integer f2x2 = (int) ((frame2[1].intValue() + xOffs - lowResMinX) * lowResScaleEncodeX);
+                        Integer f2y1 = (int) ((frame2[2].intValue() + yOffs - lowResMinY) * lowResScaleEncodeY);
+                        Integer f2y2 = (int) ((frame2[3].intValue() + yOffs - lowResMinY) * lowResScaleEncodeY);
+                        Integer f2z1 = (int) ((frame2[4].intValue() + zOffs - lowResMinZ) * lowResScaleEncodeZ);
+                        Integer f2z2 = (int) ((frame2[5].intValue() + zOffs - lowResMinZ) * lowResScaleEncodeZ);
 
                         encBufferX.append("0x" + Integer.toHexString(BinaryHelper.encode(f1x1, f1x2, f2x1, f2x2)) + "U");
                         encBufferY.append("0x" + Integer.toHexString(BinaryHelper.encode(f1y1, f1y2, f2y1, f2y2)) + "U");
                         encBufferZ.append("0x" + Integer.toHexString(BinaryHelper.encode(f1z1, f1z2, f2z1, f2z2)) + "U");
 
-                        if (j < lowResJointLength - 2) {
+                        if (k < lowResJointLength - 1) {
                             encBufferX.append(",");
                             encBufferY.append(",");
                             encBufferZ.append(",");
@@ -354,7 +364,7 @@ public class FourierGenerator {
 
         commonBuffer.append("/* MOVE TO COMMON - END */" + System.lineSeparator());
 
-        //*
+        /*
         System.out.println("Generated Fourier");
         System.out.println("minX:" + minX);
         System.out.println("maxX:" + maxX);
@@ -362,8 +372,30 @@ public class FourierGenerator {
         System.out.println("maxY:" + maxY);
         System.out.println("minZ:" + minZ);
         System.out.println("maxZ:" + maxZ);
+        System.out.println("max low res x:" + maxLowResDevX);
+        System.out.println("max low res y:" + maxLowResDevY);
+        System.out.println("max low res z:" + maxLowResDevZ);
+        System.out.println("lowResMinX:" + lowResMinX);
+        System.out.println("lowResMaxX:" + lowResMaxX);
+        System.out.println("lowResMinY:" + lowResMinY);
+        System.out.println("lowResMaxY:" + lowResMaxY);
+        System.out.println("lowResMinZ:" + lowResMinZ);
+        System.out.println("lowResMaxZ:" + lowResMaxZ);
         //*/
 
         return commonBuffer.append(shaderCode);
     }
+
+    private static int higher(int cMax, Double val) {
+        if (val > cMax)
+            return val.intValue();
+        return cMax;
+    }
+
+    private static int lower(int cMin, Double val) {
+        if (val < cMin)
+            return val.intValue();
+        return cMin;
+    }
+
 }
