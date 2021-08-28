@@ -52,6 +52,7 @@ public class MoCapPlayer extends Canvas {
                 sceneOffset = new Double[] {spatialOffset.getOffsetPointX(),
                         spatialOffset.getOffsetPointY(),
                         spatialOffset.getOffsetPointZ()};
+                screenOffset = new Integer[] {(int) width / 2, (int) height / 2};
             } else if (SpatialOffset.OFFSET_JOINT == spatialOffset.getOffsetMode()) {
                 Joint offset = frame.getJoints().get(spatialOffset.getOffsetJointId() - 1);
                 sceneOffset = new Double[] {offset.getX(), offset.getY(), offset.getZ()};
@@ -60,11 +61,9 @@ public class MoCapPlayer extends Canvas {
 
             for (Joint joint : frame.getJoints()) {
                 if (joint.isDisplay()) {
-
                     Integer x = (int) ((joint.getX().intValue() - sceneOffset[0].intValue()) * scale);
                     Integer y = (int) ((joint.getY().intValue() - sceneOffset[1].intValue()) * scale);
                     Integer z = (int) ((joint.getZ().intValue() - sceneOffset[2].intValue()) * scale);
-
                     Integer xPos = (view.equals("XY") ? x : z) + screenOffset[0];
                     Integer yPos = ((int) height - y) - screenOffset[1];
 

@@ -3,6 +3,7 @@ package com.shau.mocap.ui.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
 public class GenerateFourierController {
@@ -11,13 +12,16 @@ public class GenerateFourierController {
     private int endFrame;
     private int fourierFrames;
     private boolean loop;
+    private int easingFrames;
     private boolean useLowResolution;
     private int cutoff;
 
     @FXML private TextField txtStartFrame;
     @FXML private TextField txtEndFrame;
+    @FXML private ComboBox<String> cmbDataScale;
     @FXML private TextField txtFourierFrames;
     @FXML private CheckBox cbLoop;
+    @FXML private TextField txtEasingFrames;
     @FXML private CheckBox cbUseLowResolution;
     @FXML private TextField txtCutoff;
 
@@ -36,13 +40,27 @@ public class GenerateFourierController {
         txtCutoff.setEditable(useLowResolution);
     }
 
+    public void cbLoopAction(ActionEvent ae)  {
+        cbLoop.setSelected(false);
+        txtEasingFrames.setEditable(cbLoop.isSelected());
+    }
+
     public int getFourierFrames() {
         validate();
         return fourierFrames;
     }
 
+    public double getScale() {
+        return Double.valueOf(cmbDataScale.getValue());
+    }
+
     public boolean isLoop() {
         return cbLoop.isSelected();
+    }
+
+    public int getEasingFrames() {
+        validate();
+        return easingFrames;
     }
 
     public boolean isUseLowResolution() {
@@ -61,6 +79,8 @@ public class GenerateFourierController {
         txtEndFrame.setEditable(false);
         txtFourierFrames.setText(String.valueOf(fourierFrames));
         cbLoop.setSelected(loop);
+        txtEasingFrames.setText(String.valueOf(easingFrames));
+        txtEasingFrames.setEditable(cbLoop.isSelected());
         cbUseLowResolution.setSelected(useLowResolution);
         txtCutoff.setText(String.valueOf(cutoff));
         txtCutoff.setEditable(useLowResolution);
@@ -83,6 +103,14 @@ public class GenerateFourierController {
                         + " should be a modulo of 2. Try cutoff value " + (updatedCutoff - 1)
                         + " or " + (updatedCutoff + 1) + "?");
             this.cutoff = updatedCutoff;
+        }
+        if (cbLoop.isSelected()) {
+            int easingFrames =  Integer.valueOf(txtEasingFrames.getText());
+            if (easingFrames < 0 || easingFrames > 10) {
+                throw new IllegalArgumentException("Invalid Easing frames:" + easingFrames
+                        + " expecting range 0-10");
+            }
+            this.easingFrames = easingFrames;
         }
     }
 }

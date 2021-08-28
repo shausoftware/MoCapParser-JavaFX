@@ -239,15 +239,19 @@ public class MainController implements Initializable {
             dialog.setDialogPane(dialogPane);
             Optional<ButtonType> clicked = dialog.showAndWait();
             if (clicked.get() == ButtonType.OK) {
+                double scale = controller.getScale();
                 int fourierFrames = controller.getFourierFrames();
                 boolean loop = controller.isLoop();
+                int easingFrames = controller.getEasingFrames();
                 boolean useLowResolution = controller.isUseLowResolution();
                 int cutoff = controller.getCutoff();
                 FourierGenerator.generateFourier(moCapScene,
                         playState.getStartFrame(),
                         playState.getEndFrame(),
+                        scale,
                         fourierFrames,
                         loop,
+                        easingFrames,
                         useLowResolution,
                         cutoff);
             }

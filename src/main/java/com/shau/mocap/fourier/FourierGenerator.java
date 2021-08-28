@@ -1,10 +1,13 @@
 package com.shau.mocap.fourier;
 
 import com.shau.mocap.MoCapFileHandler;
+import com.shau.mocap.domain.Frame;
+import com.shau.mocap.domain.SpatialOffset;
 import com.shau.mocap.util.BinaryHelper;
 import com.shau.mocap.domain.Joint;
 import com.shau.mocap.domain.MoCapScene;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,64 +16,95 @@ public class FourierGenerator {
     public static void generateFourier(MoCapScene moCapScene,
                                             int startFrame,
                                             int endFrame,
+                                            double scale,
                                             int fourierFrames,
                                             boolean loop,
+                                            int easingFrames,
                                             boolean useLowResolution,
                                             int cutoff) {
 
-        int frames = endFrame - startFrame;
-        int allJoints = moCapScene.getFrames().get(startFrame).getJoints().size();
+        //pre-processing
+        List<Frame> processFrames = preProcess(moCapScene, scale);
+        //loop easing
+
+        int dataFramesSize = endFrame - startFrame;
+        int allJointsSize = processFrames.get(startFrame).getJoints().size();
         //displayed joints
-        int displayedJoints = moCapScene.getFrames().get(startFrame).getJoints().stream()
+        int displayedJointsSize = processFrames.get(startFrame).getJoints().stream()
                 .filter(j -> j.isDisplay())
                 .collect(Collectors.toList()).size();
 
         //fourier transform
-        Double[][][] transform = new Double[displayedJoints][fourierFrames][6];
+        Double[][][] transform = new Double[displayedJointsSize][fourierFrames][6];
         int jointCount = 0;
-        for (int i = 0;  i < allJoints; i++) {
+        for (int i = 0;  i < allJointsSize; i++) {
             int index = i;
-            List<Joint> fourierJoints = moCapScene.getFrames().stream()
+            List<Joint> fourierJoints = processFrames.stream()
                     .skip(startFrame)
-                    .limit(frames)
+                    .limit(dataFramesSize)
                     .map(f -> f.getJoints().get(index))
                     .collect(Collectors.toList());
-            if (loop) {
-                fourierJoints.add(fourierJoints.get(0)); //add first joint of frame to end of list when looping
-            }
+            //if (loop) {
+            //    fourierJoints.add(fourierJoints.get(0)); //add first joint of frame to end of list when looping
+            //}
 
             if (fourierJoints.get(0).isDisplay()) {
-                transform[jointCount++] = calculateFourier(fourierJoints,
-                        fourierFrames,
-                        moCapScene.getSpatialOffset().getOffsetJointId());
+                transform[jointCount++] = calculateFourier(fourierJoints, fourierFrames);
             }
         }
 
-        StringBuffer shaderBuffer = generateFourierOutput(transform, frames, fourierFrames, useLowResolution, cutoff);
+        StringBuffer shaderBuffer = generateFourierOutput(transform,
+                dataFramesSize,
+                fourierFrames,
+                useLowResolution,
+                cutoff);
         MoCapFileHandler.saveShaderOutput(moCapScene.getFilename(), shaderBuffer);
     }
 
-    private static Double[][] calculateFourier(List<Joint> joints,
-                                               int fourierFrames,
-                                               Integer centerJointId) {
+    private static List<Frame> preProcess(MoCapScene moCapScene, double scale) {
+        List<Frame> processFrames = new ArrayList<>();
+        SpatialOffset spatialOffset = moCapScene.getSpatialOffset();
+        for (Frame frame : moCapScene.getFrames()) {
+            double offsetX = 0.0;
+            double offsetY = 0.0;
+            double offsetZ = 0.0;
+            if (spatialOffset.getOffsetMode() == SpatialOffset.OFFSET_JOINT) {
+                Joint centerJoint = frame.getJoints().get(spatialOffset.getOffsetJointId() - 1);
+                offsetX = centerJoint.getX();
+                offsetY = centerJoint.getY();
+                offsetZ = centerJoint.getZ();
+            } else if (spatialOffset.getOffsetMode() == SpatialOffset.OFFSET_XYZ) {
+                offsetX = spatialOffset.getOffsetPointX();
+                offsetY = spatialOffset.getOffsetPointY();
+                offsetZ = spatialOffset.getOffsetPointZ();
+            }
+
+            List<Joint> processJoints = new ArrayList<>();
+            for (Joint joint : frame.getJoints()) {
+                Joint processJoint = new Joint(joint.getId(),
+                        (joint.getX() - offsetX) * scale,
+                        (joint.getY() - offsetY) * scale,
+                        (joint.getZ() - offsetZ) * scale);
+                processJoint.updateDisplayState(joint.getColour(), joint.isDisplay());
+                processJoints.add(processJoint);
+            }
+            processFrames.add(new Frame(frame.getId(), processJoints));
+        }
+        return processFrames;
+    }
+
+    private static Double[][] calculateFourier(List<Joint> joints, int fourierFrames) {
 
         Double[][] fcs = new Double[fourierFrames][6];
         int frames = joints.size();
-        Joint centerJoint = centerJointId == null ? null : joints.get(centerJointId - 1);
 
         for (int k = 0;  k < fourierFrames; k++) {
             Double[] fc = new Double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
             for (int i = 0; i < frames; i++) {
                 Joint joint = joints.get(i);
-
                 Double xPos = joint.getX();
                 Double yPos = joint.getY();
                 Double zPos = joint.getZ();
-                if (centerJoint != null) {
-                    xPos -= centerJoint.getX();
-                    //yPos -= centerJoint.getY(); //walking?
-                    zPos -= centerJoint.getZ();
-                }
 
                 Double an = -6.283185 * Double.valueOf(k) * Double.valueOf(i) / Double.valueOf(frames);
                 Double[] ex = new Double[] {Math.cos(an), Math.sin(an)};
@@ -246,7 +280,7 @@ public class FourierGenerator {
         }
         shaderCode.append("void mainImage(out vec4 C, vec2 U) {" + LS);
         shaderCode.append(LS);
-        shaderCode.append("    float h = mod(floor(T*50.), 100.) / 100.;" + LS);
+        shaderCode.append("    float h = mod(floor(T*8.), 100.) / 100.;" + LS);
         shaderCode.append("    uint eX[FFRAMES], eY[FFRAMES], eZ[FFRAMES];" + LS);
         if (useLowResolution) {
             shaderCode.append("    uint eXLowRes[FFRAMES_LOW_RES], eYLowRes[FFRAMES_LOW_RES], eZLowRes[FFRAMES_LOW_RES];" + LS);
@@ -364,7 +398,7 @@ public class FourierGenerator {
 
         commonBuffer.append("/* MOVE TO COMMON - END */" + System.lineSeparator());
 
-        /*
+        //*
         System.out.println("Generated Fourier");
         System.out.println("minX:" + minX);
         System.out.println("maxX:" + maxX);
@@ -397,5 +431,4 @@ public class FourierGenerator {
             return val.intValue();
         return cMin;
     }
-
 }
